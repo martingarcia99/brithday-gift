@@ -53,6 +53,11 @@ Te quiero muchísimo.`,
     { file: 'foto-3.jpg', caption: 'Una noche de mil luces que, aun así, brillaban menos que tu sonrisa.' },
     { file: 'foto-4.jpg', caption: 'Nuestra escapada entre el frío, los abrigos y un montón de abrazos.' },
     { file: 'foto-5.jpg', caption: 'En casa, haciendo el tonto: nuestro plan favorito del mundo.' },
+    { file: 'foto-6.jpg', caption: 'Abrazados frente a la cascada, empapados y felices.' },
+    { file: 'foto-7.jpg', caption: 'De la mano, sin prisa, mirando el mundo juntos.' },
+    { file: 'foto-8.jpg', caption: 'Un beso bajo el agua, de esos que no se olvidan nunca.' },
+    { file: 'foto-9.jpg', caption: 'Perdidos en un templo de cuento, al otro lado del mundo.' },
+    { file: 'foto-10.jpg', caption: 'Viviendo una aventura de las de verdad, junto a los gigantes más dulces.' },
   ],
 };
 
