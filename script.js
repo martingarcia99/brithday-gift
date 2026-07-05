@@ -58,6 +58,9 @@ Te quiero muchísimo.`,
     { file: 'foto-8.jpg', caption: 'Un beso bajo el agua, de esos que no se olvidan nunca.' },
     { file: 'foto-9.jpg', caption: 'Perdidos en un templo de cuento, al otro lado del mundo.' },
     { file: 'foto-10.jpg', caption: 'Viviendo una aventura de las de verdad, junto a los gigantes más dulces.' },
+    { file: 'foto-11.jpg', caption: 'Elegantes y enamorados, en una de esas noches que parecen de película.' },
+    { file: 'foto-12.jpg', caption: 'Frente a la Fontana di Trevi, pidiendo el deseo de volver siempre juntos.' },
+    { file: 'foto-13.jpg', caption: 'Atardeceres por la ciudad contigo, que lo hacen todo más bonito.' },
   ],
 };
 
