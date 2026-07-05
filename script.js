@@ -44,15 +44,15 @@ Este es solo el principio de tu sorpresa... sigue mirando.
 Te quiero muchísimo.`,
 
   // Recuerdos de la galería. "file" es el nombre del archivo dentro de /images.
-  // Si el archivo no existe todavía, se mostrará un bonito marcador de
-  // posición en su lugar, así que puedes ir añadiendo las fotos poco a poco.
+  // Los textos de abajo son solo una idea: cámbialos por el recuerdo real
+  // que quieras dejar debajo de cada foto. Si un archivo no existe todavía,
+  // se mostrará un bonito marcador de posición en su lugar.
   memories: [
-    { file: 'foto-1.jpg', caption: 'Escribe aquí ese recuerdo tan especial...' },
-    { file: 'foto-2.jpg', caption: 'Un momento que no querías olvidar...' },
-    { file: 'foto-3.jpg', caption: 'Aquel día en que todo fue perfecto...' },
-    { file: 'foto-4.jpg', caption: 'Una sonrisa que lo dice todo...' },
-    { file: 'foto-5.jpg', caption: 'Nuestro rincón favorito...' },
-    { file: 'foto-6.jpg', caption: 'El comienzo de algo precioso...' },
+    { file: 'foto-1.jpg', caption: 'Aquel paraíso que descubrimos juntos, con el mar más azul y tú a mi lado.' },
+    { file: 'foto-2.jpg', caption: 'Riéndonos de nada y de todo, que es como más me gusta estar contigo.' },
+    { file: 'foto-3.jpg', caption: 'Una noche de mil luces que, aun así, brillaban menos que tu sonrisa.' },
+    { file: 'foto-4.jpg', caption: 'Nuestra escapada entre el frío, los abrigos y un montón de abrazos.' },
+    { file: 'foto-5.jpg', caption: 'En casa, haciendo el tonto: nuestro plan favorito del mundo.' },
   ],
 };
 
