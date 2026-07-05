@@ -28,20 +28,25 @@
 const CONFIG = {
   // Texto de la carta. Se escribe letra a letra al abrir el sobre.
   letterText:
-`Mi vida,
+`Bueno mi vidaa, un añito más. Un año más a tu lado lleno de experiencias, emociones, viajes y locuras contigo.
 
-Hoy cumples 29 años y solo puedo pensar en lo afortunado que soy
-de tenerte a mi lado. Cada día contigo es un poquito de magia real,
-de esa que no hace falta buscar en los cuentos porque ya la tengo
-en casa.
+Gracias por ser como eres conmigo, de verdad, por apoyarme siempre tanto en los buenos momentos como, sobre todo, en los malos: en mis malas rachas de trabajo, cuando me he encontrado mal con alguien, cuando he estado enfermo y me has cuidado tanto que me has ayudado a curarme.
 
-Gracias por tu risa, por tu manera de mirar el mundo, por
-convertir hasta lo más pequeño en algo especial. Contigo todo
-es más bonito.
+Son tantos los momentos que hemos vivido juntos... Todos los viajes, sobre todo el de Tailandia, mi primer viaje tan largo, que hemos disfrutado tanto y con muchísimas risas. Todas las escapadas que hemos hecho, en las que me has hecho visitar lugares increíbles que desconocía y que me hacen ser superfeliz, porque siempre miras lo mejor para mí. Y es eso lo que me encanta de ti: que cuidas mucho a las personas que te rodean e intentas que estén todos bien. De verdad, no cambies nunca.
 
-Este es solo el principio de tu sorpresa... sigue mirando.
+Aunque hayamos tenido peleítas pequeñas, para mí son insignificantes, porque siempre encontramos la manera de estar bien, y eso también es superimportante en una relación.
 
-Te quiero muchísimo.`,
+Gracias por estos años viviendo juntos. Eran y serán los mejores de mi vida, porque no tengo ninguna duda de que quiero un futuro junto a ti y de formar una familia contigo, y espero que por tu parte también.
+
+También me encanta cómo eres con mi familia, mis abuelos, mis padres y mis amigos; tu manera tan fácil de expresar los sentimientos y lo bien que los tratas.
+
+Gracias de verdad por haber aparecido en mi vida. Eres única, buena y fiel.
+
+Espero que te guste mucho mi regalito, que sé que te hará muchísima ilusión.
+
+Por muchos cumpleaños más a tu lado. Que siga viviéndolos contigo y que sigas siendo muy feliiz. Te voy a cuidar siempre.
+
+TE AMO, TE AMO Y TE AMO ❤️❤️❤️❤️❤️`,
 
   // Recuerdos de la galería. "file" es el nombre del archivo dentro de /images.
   // Los textos de abajo son solo una idea: cámbialos por el recuerdo real
@@ -241,8 +246,9 @@ updateProgressDots();
 /* -------------------------------------------------------------------------
    7. PANTALLA 2 — CARTA (SOBRE + MÁQUINA DE ESCRIBIR)
    ------------------------------------------------------------------------- */
-let letterTyped = false;
+let letterTyped = false;      // ¿ya se ha lanzado la escritura de la carta?
 let typewriterInterval = null;
+let finishTypewriter = null;  // función para completar la carta al instante
 
 (function initLetter() {
   const envelope = qs('#envelope');
@@ -250,7 +256,11 @@ let typewriterInterval = null;
   const afterLetterBtn = qs('#btn-after-letter');
 
   function openEnvelope() {
-    if (envelope.classList.contains('is-open')) return;
+    // Si la carta ya se está escribiendo, un segundo toque la muestra entera.
+    if (envelope.classList.contains('is-open')) {
+      if (finishTypewriter) finishTypewriter();
+      return;
+    }
     envelope.classList.add('is-open');
     envelope.setAttribute('aria-expanded', 'true');
 
@@ -269,16 +279,38 @@ let typewriterInterval = null;
   });
 })();
 
-function typeWriter(el, text, buttonToReveal, speed = 28) {
+/**
+ * Escribe el texto letra a letra dentro de "el".
+ * La velocidad se adapta a la longitud para que una carta larga no se
+ * eternice (objetivo: unos 16 s en total), con un mínimo por carácter.
+ * Mientras escribe, mantiene el scroll pegado abajo para seguir la lectura.
+ */
+function typeWriter(el, text, buttonToReveal) {
   el.textContent = '';
   let i = 0;
+  const speed = Math.max(11, Math.round(16000 / text.length));
+  // El scroll ocurre en la hoja (.letter), no en el párrafo de texto.
+  const scroller = el.closest('.letter');
   clearInterval(typewriterInterval);
+
+  // Permite completar la carta de golpe (segundo toque en el sobre).
+  // Al completar, volvemos arriba para poder leerla desde el principio.
+  finishTypewriter = () => {
+    clearInterval(typewriterInterval);
+    el.textContent = text;
+    if (scroller) scroller.scrollTop = 0;
+    if (buttonToReveal) buttonToReveal.classList.add('is-ready');
+    finishTypewriter = null;
+  };
+
   typewriterInterval = setInterval(() => {
     el.textContent += text.charAt(i);
+    if (scroller) scroller.scrollTop = scroller.scrollHeight; // sigue el texto
     i++;
     if (i >= text.length) {
       clearInterval(typewriterInterval);
       if (buttonToReveal) buttonToReveal.classList.add('is-ready');
+      finishTypewriter = null;
     }
   }, speed);
 }
@@ -288,6 +320,7 @@ function resetLetter() {
   const letterTextEl = qs('#letter-text');
   const afterLetterBtn = qs('#btn-after-letter');
   clearInterval(typewriterInterval);
+  finishTypewriter = null;
   envelope.classList.remove('is-open');
   envelope.setAttribute('aria-expanded', 'false');
   letterTextEl.textContent = '';

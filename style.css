@@ -464,8 +464,17 @@ main#app {
   opacity: 0;
   transform: translate(-50%, -160%) scale(0.6);
 }
+/* Al abrir, la carta se despliega a un tamaño cómodo de lectura y
+   emerge por encima del sobre. Si el texto es largo, se puede
+   desplazar (scroll) dentro de la propia hoja. */
 .envelope.is-open .letter {
-  transform: translateY(-38%) scale(1);
+  left: 50%;
+  right: auto;
+  top: auto;
+  bottom: -8%;
+  width: min(92vw, 430px);
+  height: min(54vh, 400px);
+  transform: translate(-50%, 0) scale(1);
   opacity: 1;
   z-index: 6;
 }
