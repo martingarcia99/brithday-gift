@@ -1,0 +1,1052 @@
+/* =========================================================================
+   MIRIAM · WEB DE CUMPLEAÑOS SORPRESA
+   Hoja de estilos principal
+   =========================================================================
+   Índice:
+   1. Reset y variables globales (paleta, tipografías, tiempos)
+   2. Fondo global (estrellas, luna, destellos)
+   3. Estructura de pantallas y transiciones
+   4. Botones y elementos comunes
+   5. Pantalla 1 — Portada
+   6. Pantalla 2 — Carta
+   7. Pantalla 3 — Galería / carrusel
+   8. Pantalla 4 — Pregunta
+   9. Pantalla 5 — Castillo mágico
+   10. Pantalla 6 — Caja de regalo
+   11. Pantalla 7 — Billete / revelación
+   12. Pantalla 8 — Celebración final
+   13. Música flotante y progreso
+   14. Partículas compartidas (confeti, corazones, estrellas)
+   15. Responsive / Safari iPhone
+   ========================================================================= */
+
+/* -------------------------------------------------------------------------
+   1. RESET Y VARIABLES GLOBALES
+   ------------------------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Paleta */
+  --pink: #f7cbe0;
+  --pink-deep: #ec9fc4;
+  --sky: #ade3fb;
+  --sky-deep: #7fc9f2;
+  --gold: #f2d38a;
+  --gold-deep: #d9ab4e;
+  --purple: #d3c0ef;
+  --purple-deep: #a988dd;
+  --white: #fffaf3;
+  --navy: #0c1030;
+  --navy-deep: #05061a;
+  --text-dark: #3c2f4d;
+
+  /* Tipografías (pilas de sistema, funcionan sin conexión a internet) */
+  --font-script: 'Snell Roundhand', 'Brush Script MT', 'Segoe Script', cursive;
+  --font-serif: Georgia, 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Times New Roman', serif;
+
+  /* Tiempos de transición */
+  --t-fast: 0.3s;
+  --t-medium: 0.6s;
+  --t-slow: 1.2s;
+  --ease-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Alto de viewport seguro para móviles (fallback + dvh) */
+  --vh: 100vh;
+}
+
+html, body {
+  height: 100%;
+  overscroll-behavior: none;
+}
+
+body {
+  font-family: var(--font-serif);
+  color: var(--white);
+  background: var(--navy-deep);
+  overflow: hidden; /* la narrativa se controla por pantallas, no por scroll */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Soporte de "notch" en iPhone */
+#app {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+/* -------------------------------------------------------------------------
+   2. FONDO GLOBAL — CIELO ESTRELLADO
+   ------------------------------------------------------------------------- */
+#stars-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  background: radial-gradient(ellipse at 50% 0%, #171b45 0%, var(--navy) 45%, var(--navy-deep) 100%);
+}
+
+#global-sparkles {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 6px 2px rgba(242, 211, 138, 0.8);
+  opacity: 0;
+  animation: sparkle-float linear infinite;
+}
+
+@keyframes sparkle-float {
+  0%   { transform: translateY(0) scale(0.4); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 0.6; }
+  100% { transform: translateY(-120vh) scale(1); opacity: 0; }
+}
+
+/* -------------------------------------------------------------------------
+   3. ESTRUCTURA DE PANTALLAS Y TRANSICIONES
+   ------------------------------------------------------------------------- */
+main#app {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+}
+
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 6vh 6vw;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: scale(1.03);
+  transition: opacity var(--t-slow) var(--ease-soft),
+              transform var(--t-slow) var(--ease-soft),
+              visibility 0s linear var(--t-slow);
+  overflow: hidden;
+}
+
+.screen.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: scale(1);
+  transition: opacity var(--t-slow) var(--ease-soft),
+              transform var(--t-slow) var(--ease-soft),
+              visibility 0s linear 0s;
+}
+
+.screen-content {
+  position: relative;
+  max-width: 720px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.6rem;
+}
+
+.screen-content.wide {
+  max-width: 980px;
+}
+
+.eyebrow {
+  font-family: var(--font-serif);
+  font-style: italic;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-size: clamp(0.7rem, 1.6vw, 0.95rem);
+  color: var(--gold);
+  opacity: 0.9;
+}
+
+.title-script {
+  font-family: var(--font-script), var(--font-serif);
+  font-weight: 400;
+  line-height: 1.25;
+  color: var(--white);
+  text-shadow: 0 0 18px rgba(247, 203, 224, 0.55), 0 0 40px rgba(173, 227, 251, 0.25);
+}
+
+.big-title {
+  font-size: clamp(1.9rem, 5.4vw, 3.4rem);
+}
+
+.title-serif {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(1.3rem, 3.2vw, 2rem);
+  color: var(--white);
+}
+
+.glow-text {
+  animation: glow-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% { text-shadow: 0 0 18px rgba(247, 203, 224, 0.55), 0 0 40px rgba(173, 227, 251, 0.25); }
+  50%      { text-shadow: 0 0 30px rgba(247, 203, 224, 0.9), 0 0 60px rgba(173, 227, 251, 0.5); }
+}
+
+/* Animación de entrada suave reutilizable */
+.reveal-in {
+  animation: reveal-up var(--t-slow) var(--ease-soft) both;
+}
+.reveal-in:nth-child(1) { animation-delay: 0.1s; }
+.reveal-in:nth-child(2) { animation-delay: 0.45s; }
+.reveal-in:nth-child(3) { animation-delay: 0.9s; }
+
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.hidden-until-ready {
+  opacity: 0;
+  transform: translateY(14px);
+  pointer-events: none;
+  transition: opacity var(--t-medium) var(--ease-soft), transform var(--t-medium) var(--ease-soft);
+}
+.hidden-until-ready.is-ready {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* -------------------------------------------------------------------------
+   4. BOTONES Y ELEMENTOS COMUNES
+   ------------------------------------------------------------------------- */
+.btn {
+  position: relative;
+  padding: 0.95em 2.4em;
+  font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+  letter-spacing: 0.04em;
+  border-radius: 999px;
+  color: var(--text-dark);
+  transition: transform var(--t-fast) var(--ease-soft), box-shadow var(--t-fast) var(--ease-soft);
+  overflow: hidden;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--gold) 0%, var(--pink) 55%, var(--purple) 100%);
+  box-shadow: 0 6px 24px rgba(217, 171, 78, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.4) inset;
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.65) 50%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform 0.9s ease;
+}
+
+.btn-primary:hover::after,
+.btn-primary:focus-visible::after {
+  transform: translateX(120%);
+}
+
+.btn-ghost {
+  color: var(--white);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35) inset;
+  backdrop-filter: blur(6px);
+}
+
+.btn:hover, .btn:focus-visible {
+  transform: translateY(-3px);
+}
+.btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.button-row {
+  display: flex;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--gold);
+  font-size: 1.4rem;
+  animation: bob 2.6s ease-in-out infinite;
+  opacity: 0.8;
+}
+
+@keyframes bob {
+  0%, 100% { transform: translate(-50%, 0); opacity: 0.5; }
+  50%      { transform: translate(-50%, -10px); opacity: 1; }
+}
+
+/* Variante sin desplazamiento horizontal, para textos ya centrados
+   por texto (envelope-hint, gift-hint) en vez de por transform. */
+@keyframes hint-bob {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50%      { transform: translateY(-6px); opacity: 1; }
+}
+
+/* -------------------------------------------------------------------------
+   5. PANTALLA 1 — PORTADA
+   ------------------------------------------------------------------------- */
+.moon {
+  position: absolute;
+  top: 8%;
+  right: 12%;
+  width: clamp(70px, 14vw, 130px);
+  height: clamp(70px, 14vw, 130px);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fffef2 0%, #fdf3d0 45%, #f2d38a 100%);
+  box-shadow: 0 0 60px 20px rgba(242, 211, 138, 0.45);
+}
+
+.moon-glow {
+  position: absolute;
+  inset: -40%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(242, 211, 138, 0.35) 0%, transparent 70%);
+  animation: moon-pulse 5s ease-in-out infinite;
+}
+
+@keyframes moon-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50%      { opacity: 1; transform: scale(1.12); }
+}
+
+/* -------------------------------------------------------------------------
+   6. PANTALLA 2 — CARTA
+   ------------------------------------------------------------------------- */
+.envelope {
+  position: relative;
+  width: min(88vw, 380px);
+  aspect-ratio: 3 / 2;
+  margin: 1.5rem auto 0.5rem;
+  cursor: pointer;
+}
+
+.envelope-back,
+.envelope-front {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+}
+.envelope-back {
+  background: linear-gradient(160deg, var(--purple) 0%, var(--pink) 100%);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+  z-index: 1;
+}
+.envelope-front {
+  z-index: 3;
+  background: linear-gradient(160deg, var(--pink) 0%, var(--purple) 100%);
+  clip-path: polygon(0 100%, 50% 55%, 100% 100%);
+  transition: transform var(--t-slow) var(--ease-soft);
+  transform-origin: bottom center;
+}
+
+.envelope-flap {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  background: linear-gradient(160deg, var(--pink-deep) 0%, var(--purple-deep) 100%);
+  clip-path: polygon(0 0, 50% 55%, 100% 0);
+  transform-origin: top center;
+  transition: transform var(--t-slow) var(--ease-soft);
+}
+
+.envelope-seal {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  top: 44%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ff9ec2, var(--pink-deep));
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+  transition: opacity var(--t-fast) ease, transform var(--t-fast) ease;
+}
+
+.envelope-hint {
+  position: absolute;
+  bottom: -2.2rem;
+  left: 0;
+  right: 0;
+  font-size: 0.85rem;
+  opacity: 0.7;
+  font-style: italic;
+  animation: hint-bob 2.6s ease-in-out infinite;
+}
+
+.letter {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  bottom: 6%;
+  top: 14%;
+  z-index: 2;
+  background: var(--white);
+  border-radius: 6px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  transform: translateY(6%) scale(0.94);
+  opacity: 0;
+  transition: transform var(--t-slow) var(--ease-soft), opacity var(--t-slow) var(--ease-soft);
+  display: flex;
+  align-items: flex-start;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.letter-paper {
+  padding: 1.4rem 1.3rem;
+  width: 100%;
+}
+
+.letter-text {
+  font-family: var(--font-serif);
+  color: var(--text-dark);
+  font-size: clamp(0.92rem, 2.4vw, 1.08rem);
+  line-height: 1.75;
+  text-align: left;
+  white-space: pre-wrap;
+}
+
+/* Estado abierto, controlado por JS añadiendo .is-open al .envelope */
+.envelope.is-open .envelope-flap {
+  transform: rotateX(180deg);
+}
+.envelope.is-open .envelope-front {
+  transform: translateY(6%);
+  opacity: 0;
+}
+.envelope.is-open .envelope-seal {
+  opacity: 0;
+  transform: translate(-50%, -160%) scale(0.6);
+}
+.envelope.is-open .letter {
+  transform: translateY(-38%) scale(1);
+  opacity: 1;
+  z-index: 6;
+}
+.envelope.is-open .envelope-hint {
+  opacity: 0;
+  animation: none;
+}
+
+/* -------------------------------------------------------------------------
+   7. PANTALLA 3 — GALERÍA / CARRUSEL
+   ------------------------------------------------------------------------- */
+.carousel {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  max-width: 640px;
+}
+
+.carousel-track-wrapper {
+  overflow: hidden;
+  flex: 1;
+  border-radius: 18px;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform var(--t-slow) var(--ease-soft);
+  touch-action: pan-y;
+}
+
+.memory-card {
+  min-width: 100%;
+  padding: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.memory-photo-frame {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 16px;
+  overflow: hidden;
+  background: linear-gradient(160deg, rgba(255,255,255,0.12), rgba(255,255,255,0.03));
+  box-shadow: 0 16px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.15) inset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.memory-photo-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transform: scale(1.06);
+  transition: opacity var(--t-slow) var(--ease-soft), transform 1.4s var(--ease-soft);
+}
+
+.memory-photo-frame img.is-loaded {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.memory-photo-placeholder {
+  font-family: var(--font-script);
+  color: var(--gold);
+  font-size: 1.1rem;
+  opacity: 0.75;
+  text-align: center;
+  padding: 1rem;
+}
+
+.memory-caption {
+  font-style: italic;
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  color: var(--white);
+  opacity: 0.9;
+  max-width: 90%;
+}
+
+.carousel-arrow {
+  flex-shrink: 0;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  color: var(--white);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.25) inset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--t-fast) ease, transform var(--t-fast) ease;
+}
+.carousel-arrow:hover { background: rgba(255,255,255,0.22); transform: scale(1.08); }
+
+.carousel-dots {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+.carousel-dots .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  transition: background var(--t-fast) ease, transform var(--t-fast) ease;
+}
+.carousel-dots .dot.active {
+  background: var(--gold);
+  transform: scale(1.3);
+}
+
+/* -------------------------------------------------------------------------
+   8. PANTALLA 4 — PREGUNTA
+   ------------------------------------------------------------------------- */
+.floating-sparkle-ring {
+  position: absolute;
+  top: -10%;
+  left: 50%;
+  width: 260px;
+  height: 260px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(242,211,138,0.18) 0%, transparent 70%);
+  animation: moon-pulse 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* -------------------------------------------------------------------------
+   9. PANTALLA 5 — CASTILLO MÁGICO
+   ------------------------------------------------------------------------- */
+.magic-eyebrow {
+  animation: glow-pulse 2.4s ease-in-out infinite;
+}
+
+.castle-scene {
+  position: relative;
+  width: min(92vw, 600px);
+  aspect-ratio: 600 / 420;
+  margin-top: 0.5rem;
+}
+
+.magic-burst {
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(circle, rgba(242,211,138,0.35) 0%, rgba(211,192,239,0.15) 45%, transparent 70%);
+  opacity: 0;
+  animation: burst-in 2.4s var(--ease-soft) forwards;
+}
+
+@keyframes burst-in {
+  0%   { opacity: 0; transform: scale(0.3); }
+  40%  { opacity: 1; }
+  100% { opacity: 0.5; transform: scale(1.4); }
+}
+
+.castle-svg {
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transform: translateY(40px) scale(0.92);
+  filter: drop-shadow(0 20px 40px rgba(124, 92, 192, 0.45));
+  animation: castle-rise 2.4s var(--ease-soft) 0.5s forwards;
+}
+
+@keyframes castle-rise {
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.castle-window {
+  animation: window-twinkle 2.2s ease-in-out infinite;
+}
+.castle-window:nth-of-type(odd) { animation-delay: 0.6s; }
+
+@keyframes window-twinkle {
+  0%, 100% { opacity: 0.6; }
+  50%      { opacity: 1; }
+}
+
+.castle-flag {
+  transform-origin: left center;
+  animation: flag-wave 2s ease-in-out infinite;
+}
+
+@keyframes flag-wave {
+  0%, 100% { transform: skewY(0deg); }
+  50%      { transform: skewY(6deg); }
+}
+
+.castle-sparkles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.castle-sparkles .mini-sparkle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: var(--gold);
+  border-radius: 50%;
+  box-shadow: 0 0 8px 3px rgba(242,211,138,0.8);
+  opacity: 0;
+  animation: mini-sparkle-pop 1.8s ease-in-out infinite;
+}
+
+@keyframes mini-sparkle-pop {
+  0%   { opacity: 0; transform: scale(0); }
+  50%  { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(0); }
+}
+
+/* -------------------------------------------------------------------------
+   10. PANTALLA 6 — CAJA DE REGALO
+   ------------------------------------------------------------------------- */
+.gift-scene {
+  position: relative;
+  perspective: 1000px;
+  margin-top: 1rem;
+}
+
+.gift-box {
+  position: relative;
+  width: clamp(160px, 34vw, 220px);
+  height: clamp(160px, 34vw, 220px);
+  transform-style: preserve-3d;
+  cursor: pointer;
+}
+
+.gift-base {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 62%;
+  background: linear-gradient(135deg, var(--pink) 0%, var(--pink-deep) 100%);
+  border-radius: 6px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  overflow: hidden;
+}
+
+.gift-lid {
+  position: absolute;
+  top: 0;
+  left: -4%;
+  right: -4%;
+  height: 40%;
+  background: linear-gradient(135deg, var(--purple) 0%, var(--purple-deep) 100%);
+  border-radius: 8px 8px 4px 4px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+  transform-origin: top center;
+  transition: transform 1.1s var(--ease-soft), opacity 0.6s ease 0.5s;
+  z-index: 3;
+}
+
+.gift-ribbon-v {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 16%;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, var(--gold) 0%, var(--gold-deep) 100%);
+}
+
+.gift-bow {
+  position: absolute;
+  top: -34px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90px;
+  height: 60px;
+}
+.bow-loop {
+  position: absolute;
+  width: 42px;
+  height: 42px;
+  border-radius: 50% 50% 50% 0;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold-deep) 100%);
+  top: 4px;
+}
+.bow-loop-left  { left: 4px; transform: rotate(-45deg); }
+.bow-loop-right { right: 4px; transform: rotate(135deg); }
+.bow-knot {
+  position: absolute;
+  left: 50%;
+  top: 16px;
+  transform: translateX(-50%);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--gold-deep);
+}
+
+.gift-glow {
+  position: absolute;
+  inset: -30%;
+  background: radial-gradient(circle, rgba(242, 211, 138, 0.55) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.6s ease;
+  pointer-events: none;
+}
+
+/* Estado abierto — controlado por JS con .is-open en #gift-box */
+.gift-box.is-open .gift-lid {
+  transform: rotateX(-115deg) translateY(-10px);
+  opacity: 0;
+}
+.gift-box.is-open .gift-glow {
+  opacity: 1;
+  animation: burst-in 1.6s var(--ease-soft) forwards;
+}
+
+#gift-hint {
+  position: static;
+  margin-top: 2.6rem;
+  animation: hint-bob 2.6s ease-in-out infinite;
+}
+.gift-box.is-open ~ #gift-hint {
+  opacity: 0;
+  animation: none;
+}
+
+/* -------------------------------------------------------------------------
+   11. PANTALLA 7 — BILLETE / REVELACIÓN
+   ------------------------------------------------------------------------- */
+.ticket-stage {
+  perspective: 1400px;
+  width: min(90vw, 460px);
+}
+
+.ticket {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  transform-style: preserve-3d;
+  transform: rotateY(180deg) scale(0.7);
+  opacity: 0;
+  animation: ticket-reveal 2.2s var(--ease-soft) 0.3s forwards;
+}
+
+@keyframes ticket-reveal {
+  0%   { opacity: 0; transform: rotateY(180deg) scale(0.7); }
+  60%  { opacity: 1; }
+  100% { opacity: 1; transform: rotateY(0deg) scale(1); }
+}
+
+.ticket-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  padding: 1.6rem;
+}
+
+.ticket-front {
+  background: linear-gradient(155deg, #fdf6e7 0%, var(--gold) 45%, var(--pink) 100%);
+  box-shadow: 0 30px 70px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.5) inset;
+  color: var(--text-dark);
+  overflow: hidden;
+}
+
+.ticket-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 40%, rgba(255,255,255,0.75) 50%, transparent 60%);
+  transform: translateX(-150%);
+  animation: shimmer-sweep 3.2s ease-in-out 1.8s infinite;
+}
+
+@keyframes shimmer-sweep {
+  to { transform: translateX(150%); }
+}
+
+.ticket-kicker {
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+.ticket-title {
+  font-family: var(--font-script);
+  font-size: clamp(1.5rem, 5vw, 2.3rem);
+  line-height: 1.3;
+}
+
+.ticket-divider {
+  display: flex;
+  gap: 0.6rem;
+  color: var(--gold-deep);
+  font-size: 0.9rem;
+}
+
+.ticket-sub {
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.ticket-back {
+  background: linear-gradient(155deg, var(--purple) 0%, var(--purple-deep) 100%);
+  transform: rotateY(180deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ticket-emblem {
+  font-size: 3rem;
+  color: var(--gold);
+}
+
+.reveal-words {
+  margin-top: 2.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.reveal-word {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(1.3rem, 4vw, 2rem);
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity var(--t-slow) var(--ease-soft), transform var(--t-slow) var(--ease-soft);
+}
+.reveal-word.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-word-script {
+  font-family: var(--font-script);
+  font-size: clamp(1.6rem, 5vw, 2.6rem);
+  color: var(--pink);
+}
+
+/* -------------------------------------------------------------------------
+   12. PANTALLA 8 — CELEBRACIÓN FINAL
+   ------------------------------------------------------------------------- */
+#fireworks-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+#screen-8 .screen-content {
+  position: relative;
+  z-index: 2;
+}
+
+.celebration-sub {
+  font-style: italic;
+  opacity: 0.9;
+  font-size: clamp(0.95rem, 2.2vw, 1.15rem);
+}
+
+/* -------------------------------------------------------------------------
+   13. MÚSICA FLOTANTE Y PROGRESO
+   ------------------------------------------------------------------------- */
+.music-btn {
+  position: fixed;
+  z-index: 50;
+  right: max(1.2rem, env(safe-area-inset-right));
+  bottom: max(1.2rem, env(safe-area-inset-bottom));
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--gold), var(--pink));
+  color: var(--text-dark);
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 26px rgba(0,0,0,0.35);
+  transition: transform var(--t-fast) ease;
+}
+.music-btn:hover { transform: scale(1.08); }
+.music-btn.is-playing {
+  animation: music-pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes music-pulse {
+  0%, 100% { box-shadow: 0 10px 26px rgba(0,0,0,0.35); }
+  50%      { box-shadow: 0 10px 34px rgba(242, 211, 138, 0.6); }
+}
+
+.progress-dots {
+  position: fixed;
+  z-index: 50;
+  bottom: max(1.4rem, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.4rem;
+  pointer-events: none;
+}
+.progress-dots .p-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  transition: background var(--t-medium) ease, transform var(--t-medium) ease;
+}
+.progress-dots .p-dot.done {
+  background: var(--gold);
+  transform: scale(1.2);
+}
+
+/* -------------------------------------------------------------------------
+   14. PARTÍCULAS COMPARTIDAS (confeti, corazones, estrellas)
+   ------------------------------------------------------------------------- */
+.fx-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.fx-particle {
+  position: absolute;
+  top: -5%;
+  will-change: transform, opacity;
+  animation: fx-fall linear forwards;
+}
+
+.fx-confetti {
+  width: 9px;
+  height: 14px;
+  border-radius: 2px;
+}
+
+.fx-heart, .fx-star {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+@keyframes fx-fall {
+  0% {
+    transform: translate(0, -10vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--drift, 0px), 110vh) rotate(var(--spin, 360deg));
+    opacity: 0.9;
+  }
+}
+
+/* -------------------------------------------------------------------------
+   15. RESPONSIVE / AJUSTES SAFARI IPHONE
+   ------------------------------------------------------------------------- */
+@media (max-width: 640px) {
+  .screen-content { gap: 1.2rem; }
+  .btn { padding: 0.85em 1.9em; }
+  .carousel { max-width: 100%; }
+  .ticket-stage { width: 92vw; }
+}
+
+@media (max-height: 560px) {
+  .screen { padding: 3vh 5vw; }
+  .moon { top: 4%; }
+  .castle-scene { width: min(70vw, 460px); }
+}
+
+/* Reduce motion: respeta preferencias de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

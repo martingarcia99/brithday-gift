@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0" />
+  <title>Feliz Cumpleaños, Miriam ✨</title>
+  <meta name="description" content="Una sorpresa muy especial para Miriam" />
+
+  <!-- Fuentes: se usan pilas de fuentes de sistema para que la web funcione
+       100% sin conexión a internet (requisito: sin depender de servidores).
+       Si en el momento de abrir la web hay conexión y quieres tipografías
+       aún más bonitas, puedes descomentar este link a Google Fonts. -->
+  <!--
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  -->
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===================================================================
+       FONDO GLOBAL: cielo estrellado persistente detrás de toda la web
+       =================================================================== -->
+  <canvas id="stars-canvas" aria-hidden="true"></canvas>
+  <div id="global-sparkles" aria-hidden="true"></div>
+
+  <!-- ===================================================================
+       BOTÓN FLOTANTE DE MÚSICA
+       =================================================================== -->
+  <audio id="bg-music" loop preload="none">
+    <!-- Coloca aquí tu archivo de música dentro de /music/cancion.mp3 -->
+    <source src="music/cancion.mp3" type="audio/mpeg" />
+  </audio>
+
+  <button id="music-toggle" class="music-btn" aria-label="Reproducir o pausar música" title="Música">
+    <span class="music-icon music-icon-play">♪</span>
+    <span class="music-icon music-icon-pause" hidden>❚❚</span>
+  </button>
+
+  <!-- Indicador de progreso, puramente decorativo -->
+  <div class="progress-dots" id="progress-dots" aria-hidden="true"></div>
+
+  <main id="app">
+
+    <!-- =================================================================
+         PANTALLA 1 — Portada nocturna
+         ================================================================= -->
+    <section class="screen active" id="screen-1" data-screen="1">
+      <div class="moon" aria-hidden="true">
+        <div class="moon-glow"></div>
+      </div>
+      <div class="screen-content">
+        <p class="eyebrow reveal-in">29 cumpleaños</p>
+        <h1 class="title-script big-title reveal-in">
+          Para la chica que hace<br />mi mundo mucho más bonito&hellip;
+        </h1>
+        <button class="btn btn-primary reveal-in" id="btn-start" data-next="2">
+          <span>Comenzar</span>
+        </button>
+      </div>
+      <div class="scroll-hint" aria-hidden="true">✦</div>
+    </section>
+
+    <!-- =================================================================
+         PANTALLA 2 — Carta romántica
+         ================================================================= -->
+    <section class="screen" id="screen-2" data-screen="2">
+      <div class="screen-content">
+        <p class="eyebrow">Una carta para ti</p>
+
+        <div class="envelope" id="envelope" tabindex="0" role="button"
+             aria-label="Abrir la carta" aria-expanded="false">
+          <div class="envelope-back"></div>
+          <div class="letter" id="letter">
+            <div class="letter-paper">
+              <p class="letter-text" id="letter-text"></p>
+            </div>
+          </div>
+          <div class="envelope-flap"></div>
+          <div class="envelope-front"></div>
+          <div class="envelope-seal">♥</div>
+          <p class="envelope-hint">Toca para abrir</p>
+        </div>
+
+        <button class="btn btn-ghost hidden-until-ready" id="btn-after-letter" data-next="3">
+          <span>Seguir&hellip;</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- =================================================================
+         PANTALLA 3 — Galería de recuerdos
+         ================================================================= -->
+    <section class="screen" id="screen-3" data-screen="3">
+      <div class="screen-content wide">
+        <p class="eyebrow">Nuestros recuerdos</p>
+        <h2 class="title-serif">Un pedacito de todo lo vivido</h2>
+
+        <div class="carousel" id="carousel">
+          <button class="carousel-arrow carousel-arrow-left" id="carousel-prev" aria-label="Recuerdo anterior">&#10094;</button>
+
+          <div class="carousel-track-wrapper">
+            <div class="carousel-track" id="carousel-track">
+              <!-- Las tarjetas de fotos se generan dinámicamente desde script.js -->
+            </div>
+          </div>
+
+          <button class="carousel-arrow carousel-arrow-right" id="carousel-next" aria-label="Siguiente recuerdo">&#10095;</button>
+        </div>
+
+        <div class="carousel-dots" id="carousel-dots"></div>
+
+        <button class="btn btn-primary" id="btn-after-gallery" data-next="4">
+          <span>Continuar</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- =================================================================
+         PANTALLA 4 — Pregunta interactiva
+         ================================================================= -->
+    <section class="screen" id="screen-4" data-screen="4">
+      <div class="screen-content">
+        <div class="floating-sparkle-ring" aria-hidden="true"></div>
+        <h2 class="title-script big-title">¿Estás preparada para<br />descubrir tu regalo?</h2>
+        <div class="button-row">
+          <button class="btn btn-primary" data-next="5"><span>Sí</span></button>
+          <button class="btn btn-primary" data-next="5"><span>Muchísimo</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================================
+         PANTALLA 5 — Animación mágica: el castillo
+         ================================================================= -->
+    <section class="screen" id="screen-5" data-screen="5">
+      <div class="screen-content">
+        <p class="eyebrow magic-eyebrow">Cierra los ojos un instante&hellip;</p>
+
+        <div class="castle-scene" id="castle-scene">
+          <div class="magic-burst" aria-hidden="true"></div>
+          <svg class="castle-svg" id="castle-svg" viewBox="0 0 600 420" aria-hidden="true">
+            <defs>
+              <linearGradient id="castleGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#fdeaf5" />
+                <stop offset="55%" stop-color="#e9c9ec" />
+                <stop offset="100%" stop-color="#c9b6e4" />
+              </linearGradient>
+              <linearGradient id="roofGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#a887d9" />
+                <stop offset="100%" stop-color="#7c5cc0" />
+              </linearGradient>
+              <radialGradient id="windowGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stop-color="#fff6cf" stop-opacity="1" />
+                <stop offset="100%" stop-color="#f6c674" stop-opacity="0.2" />
+              </radialGradient>
+            </defs>
+
+            <!-- Nubes de base -->
+            <ellipse cx="90" cy="400" rx="120" ry="18" fill="#fff" opacity="0.25" />
+            <ellipse cx="500" cy="405" rx="140" ry="20" fill="#fff" opacity="0.25" />
+
+            <!-- Torres laterales -->
+            <g class="castle-tower">
+              <rect x="60" y="220" width="55" height="170" fill="url(#castleGrad)" />
+              <polygon points="55,220 120,220 87,160" fill="url(#roofGrad)" />
+              <rect x="82" y="140" width="10" height="26" fill="#7c5cc0" />
+              <circle cx="87" cy="138" r="5" fill="#f6c674" />
+            </g>
+            <g class="castle-tower">
+              <rect x="485" y="220" width="55" height="170" fill="url(#castleGrad)" />
+              <polygon points="480,220 545,220 512,160" fill="url(#roofGrad)" />
+              <rect x="507" y="140" width="10" height="26" fill="#7c5cc0" />
+              <circle cx="512" cy="138" r="5" fill="#f6c674" />
+            </g>
+
+            <!-- Cuerpo central -->
+            <rect x="150" y="240" width="300" height="150" fill="url(#castleGrad)" />
+
+            <!-- Torres centrales -->
+            <g class="castle-tower">
+              <rect x="170" y="150" width="46" height="110" fill="url(#castleGrad)" />
+              <polygon points="165,150 221,150 193,95" fill="url(#roofGrad)" />
+              <rect x="188" y="78" width="10" height="24" fill="#7c5cc0" />
+              <circle cx="193" cy="76" r="5" fill="#f6c674" />
+            </g>
+            <g class="castle-tower castle-tower--center">
+              <rect x="270" y="110" width="60" height="150" fill="url(#castleGrad)" />
+              <polygon points="264,110 336,110 300,40" fill="url(#roofGrad)" />
+              <rect x="295" y="20" width="10" height="26" fill="#7c5cc0" />
+              <circle cx="300" cy="18" r="6" fill="#f6c674" />
+            </g>
+            <g class="castle-tower">
+              <rect x="384" y="150" width="46" height="110" fill="url(#castleGrad)" />
+              <polygon points="379,150 435,150 407,95" fill="url(#roofGrad)" />
+              <rect x="402" y="78" width="10" height="24" fill="#7c5cc0" />
+              <circle cx="407" cy="76" r="5" fill="#f6c674" />
+            </g>
+
+            <!-- Puerta -->
+            <path d="M280 390 L280 340 Q300 310 320 340 L320 390 Z" fill="#5b4270" />
+
+            <!-- Ventanas brillantes -->
+            <circle class="castle-window" cx="193" cy="180" r="7" fill="url(#windowGlow)" />
+            <circle class="castle-window" cx="300" cy="160" r="8" fill="url(#windowGlow)" />
+            <circle class="castle-window" cx="407" cy="180" r="7" fill="url(#windowGlow)" />
+            <rect class="castle-window" x="180" y="270" width="14" height="20" rx="7" fill="url(#windowGlow)" />
+            <rect class="castle-window" x="293" y="270" width="14" height="20" rx="7" fill="url(#windowGlow)" />
+            <rect class="castle-window" x="406" y="270" width="14" height="20" rx="7" fill="url(#windowGlow)" />
+
+            <!-- Banderines -->
+            <polygon class="castle-flag" points="300,20 300,4 316,12" fill="#f4a6c6" />
+            <polygon class="castle-flag" points="193,76 193,62 207,69" fill="#f4a6c6" />
+            <polygon class="castle-flag" points="407,76 407,62 421,69" fill="#f4a6c6" />
+          </svg>
+          <div class="castle-sparkles" id="castle-sparkles" aria-hidden="true"></div>
+        </div>
+
+        <button class="btn btn-primary hidden-until-ready" id="btn-after-castle" data-next="6">
+          <span>Sigamos&hellip;</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- =================================================================
+         PANTALLA 6 — Caja de regalo
+         ================================================================= -->
+    <section class="screen" id="screen-6" data-screen="6">
+      <div class="screen-content">
+        <p class="eyebrow">Tu regalo te espera</p>
+        <h2 class="title-serif">Ábrelo con cuidado&hellip;</h2>
+
+        <div class="gift-scene">
+          <div class="gift-box" id="gift-box" tabindex="0" role="button" aria-label="Abrir la caja de regalo">
+            <div class="gift-lid">
+              <div class="gift-bow">
+                <div class="bow-loop bow-loop-left"></div>
+                <div class="bow-loop bow-loop-right"></div>
+                <div class="bow-knot"></div>
+              </div>
+              <div class="gift-ribbon-v"></div>
+            </div>
+            <div class="gift-base">
+              <div class="gift-ribbon-v"></div>
+              <div class="gift-glow"></div>
+            </div>
+          </div>
+          <p class="envelope-hint" id="gift-hint">Toca la caja</p>
+        </div>
+
+        <button class="btn btn-primary hidden-until-ready" id="btn-after-gift" data-next="7">
+          <span>Ver mi regalo</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- =================================================================
+         PANTALLA 7 — Revelación del regalo
+         ================================================================= -->
+    <section class="screen" id="screen-7" data-screen="7">
+      <div class="screen-content">
+        <div class="ticket-stage" id="ticket-stage">
+          <div class="ticket" id="ticket">
+            <div class="ticket-face ticket-front">
+              <div class="ticket-shimmer"></div>
+              <p class="ticket-kicker">Billete de embarque · Un cuento hecho realidad</p>
+              <h2 class="ticket-title">Nos vamos dos días<br />a Disneyland&nbsp;Paris</h2>
+              <div class="ticket-divider" aria-hidden="true">
+                <span>✦</span><span>✦</span><span>✦</span>
+              </div>
+              <p class="ticket-sub">Pasajera: <strong>Miriam</strong></p>
+            </div>
+            <div class="ticket-face ticket-back">
+              <span class="ticket-emblem">✦</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="reveal-words" id="reveal-words">
+          <p class="reveal-word" id="word-happy">Feliz cumpleaños</p>
+          <p class="reveal-word reveal-word-script" id="word-love">Te quiero</p>
+        </div>
+
+        <button class="btn btn-primary hidden-until-ready" id="btn-after-reveal" data-next="8">
+          <span>Celebremos</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- =================================================================
+         PANTALLA 8 — Celebración final
+         ================================================================= -->
+    <section class="screen" id="screen-8" data-screen="8">
+      <canvas id="fireworks-canvas" aria-hidden="true"></canvas>
+      <div class="screen-content">
+        <h2 class="title-script big-title glow-text">¡Feliz cumpleaños,<br />mi amor!</h2>
+        <p class="celebration-sub">Que este 29 sea solo el comienzo de muchísima magia juntos.</p>
+        <button class="btn btn-ghost" id="btn-restart" data-next="1">
+          <span>Volver a empezar</span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
